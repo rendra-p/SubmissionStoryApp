@@ -84,7 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nameEditTextLayout" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.example.mystoryapp.ui.customview.EmailInputLayout
         android:id="@+id/emailEditTextLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
@@ -104,7 +104,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textEmailAddress" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </com.example.mystoryapp.ui.customview.EmailInputLayout>
 
     <TextView
         android:id="@+id/passwordTextView"
@@ -119,7 +119,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailEditTextLayout" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.example.mystoryapp.ui.customview.PasswordInputLayout
         android:id="@+id/passwordEditTextLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPassword" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </com.example.mystoryapp.ui.customview.PasswordInputLayout>
 
     <Button
         android:id="@+id/signupButton"
