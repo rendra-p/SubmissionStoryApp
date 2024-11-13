@@ -2,28 +2,96 @@ package com.example.mystoryapp.ui.login
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.mystoryapp.MainActivity
 import com.example.mystoryapp.R
+import com.example.mystoryapp.data.Injection
 import com.example.mystoryapp.databinding.ActivityLoginBinding
+import com.example.mystoryapp.ui.ViewModelFactory
+import com.example.mystoryapp.ui.signup.SignupViewModel
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val viewModelFactory = Injection.provideViewModelFactory(this)
+        viewModel = ViewModelProvider(this, viewModelFactory)[LoginViewModel::class.java]
+
         setupView()
+        setupAction()
         playAnimation()
+        observeLoginResult()
+    }
+
+    private fun setupAction() {
+        binding.loginButton.setOnClickListener {
+            val email = binding.edLoginEmail.text.toString()
+            val password = binding.edLoginPassword.text.toString()
+
+            // Validasi input
+            if (validateInput(email, password)) {
+                viewModel.login(email, password)
+            }
+        }
+
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.loginButton.isEnabled = !isLoading
+            if (isLoading) {
+                binding.loginButton.text = getString(R.string.loading)
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                binding.loginButton.text = getString(R.string.login)
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun validateInput(email: String, password: String): Boolean {
+        var isValid = true
+
+        if (email.isEmpty()) {
+            binding.emailEditTextLayout.error = "Email cannot be empty"
+            isValid = false
+        }
+
+        if (password.isEmpty() || password.length < 8) {
+            binding.passwordEditTextLayout.error = "Password must be at least 8 characters"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun observeLoginResult() {
+        viewModel.loginResult.observe(this) { result ->
+            result.onSuccess { response ->
+                // Login berhasil
+                Toast.makeText(this, "Login successful: ${response.message}", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }.onFailure { exception ->
+                // Tangani error login
+                Toast.makeText(this, "Login failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupView() {

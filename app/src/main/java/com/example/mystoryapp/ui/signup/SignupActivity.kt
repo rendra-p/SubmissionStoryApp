@@ -29,7 +29,7 @@ class SignupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Menggunakan Injection object
-        val viewModelFactory = Injection.provideViewModelFactory()
+        val viewModelFactory = Injection.provideViewModelFactory(this)
         viewModel = ViewModelProvider(this, viewModelFactory)[SignupViewModel::class.java]
 
         setupView()
