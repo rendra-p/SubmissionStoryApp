@@ -52,7 +52,7 @@ class SignupActivity : AppCompatActivity() {
         viewModel.isLoading.observe(this) { isLoading ->
             binding.signupButton.isEnabled = !isLoading
             if (isLoading) {
-                binding.signupButton.text = ""
+                binding.signupButton.text = getString(R.string.loading)
                 binding.progressBar.visibility = View.VISIBLE
             } else {
                 binding.signupButton.text = getString(R.string.signup)

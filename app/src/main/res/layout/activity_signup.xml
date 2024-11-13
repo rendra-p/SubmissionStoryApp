@@ -178,9 +178,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@+id/signupButton"
-        app:layout_constraintBottom_toBottomOf="@+id/signupButton"
-        app:layout_constraintStart_toStartOf="@+id/signupButton"
-        app:layout_constraintEnd_toEndOf="@+id/signupButton"/>
+        android:layout_gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
