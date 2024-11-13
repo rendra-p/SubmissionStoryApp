@@ -2,28 +2,103 @@ package com.example.mystoryapp.ui.signup
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.R
+import com.example.mystoryapp.data.Injection
 import com.example.mystoryapp.databinding.ActivitySignupBinding
+import com.example.mystoryapp.ui.welcome.WelcomeActivity
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
+    private lateinit var viewModel: SignupViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Menggunakan Injection object
+        val viewModelFactory = Injection.provideViewModelFactory()
+        viewModel = ViewModelProvider(this, viewModelFactory)[SignupViewModel::class.java]
+
         setupView()
+        setupAction()
         playAnimation()
+        observeRegistrationResult()
+    }
+
+    private fun setupAction() {
+        binding.signupButton.setOnClickListener {
+            val name = binding.edRegisterName.text.toString()
+            val email = binding.edRegisterEmail.text.toString()
+            val password = binding.edRegisterPassword.text.toString()
+
+            // Validasi input
+            if (validateInput(name, email, password)) {
+                viewModel.registerUser(name, email, password)
+            }
+        }
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.signupButton.isEnabled = !isLoading
+            if (isLoading) {
+                binding.signupButton.text = ""
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                binding.signupButton.text = getString(R.string.signup)
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun validateInput(name: String, email: String, password: String): Boolean {
+        var isValid = true
+
+        if (name.isEmpty()) {
+            binding.nameEditTextLayout.error = "Name cannot be empty"
+            isValid = false
+        }
+
+        if (email.isEmpty()) {
+            binding.emailEditTextLayout.error = "Email cannot be empty"
+            isValid = false
+        }
+
+        if (password.isEmpty() || password.length < 8) {
+            binding.passwordEditTextLayout.error = "Password must be at least 8 characters"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun observeRegistrationResult() {
+        viewModel.registrationResult.observe(this) { result ->
+            result.onSuccess { response ->
+                if (response.error == false) {
+                    // Registrasi berhasil
+                    Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, WelcomeActivity::class.java))
+                    finish()
+                } else {
+                    // Registrasi gagal
+                    Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+                }
+            }.onFailure { exception ->
+                // Tangani error jaringan atau lainnya
+                Toast.makeText(this, "Registration failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupView() {
