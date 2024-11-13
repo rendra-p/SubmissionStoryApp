@@ -7,12 +7,12 @@ import com.example.mystoryapp.ui.ViewModelFactory
 import com.example.mystoryapp.ui.welcome.TokenDataStore
 
 object Injection {
-    fun provideUserRepository(): UserRepository {
+    private fun provideUserRepository(): UserRepository {
         val apiService = ApiConfig.getApiService()
         return UserRepository(apiService)
     }
 
-    fun provideTokenDataStore(context: Context): TokenDataStore {
+    private fun provideTokenDataStore(context: Context): TokenDataStore {
         return TokenDataStore.getInstance(context)
     }
 

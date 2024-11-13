@@ -5,7 +5,8 @@
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.welcome.WelcomeActivity">
+    tools:context=".ui.welcome.WelcomeActivity"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/imageView"
@@ -15,7 +16,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/image_welcome" />
+        app:srcCompat="@drawable/image_welcome"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/titleTextView"

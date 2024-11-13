@@ -9,40 +9,21 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import com.example.mystoryapp.MainActivity
 import com.example.mystoryapp.databinding.ActivityWelcomeBinding
 import com.example.mystoryapp.ui.login.LoginActivity
 import com.example.mystoryapp.ui.signup.SignupActivity
-import kotlinx.coroutines.launch
 
 class WelcomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityWelcomeBinding
-    private lateinit var tokenDataStore: TokenDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        tokenDataStore = TokenDataStore.getInstance(this)
-
-        checkToken()
         setupView()
         setupButton()
         playAnimation()
-    }
-
-    private fun checkToken() {
-        lifecycleScope.launch {
-            tokenDataStore.token.collect { token ->
-                if (!token.isNullOrEmpty()) {
-                    // Arahkan ke MainActivity jika token ada
-                    startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
-                    finish()
-                }
-            }
-        }
     }
 
     private fun setupView() {

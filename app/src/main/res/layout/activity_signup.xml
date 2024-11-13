@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.signup.SignupActivity">
+    tools:context=".ui.signup.SignupActivity"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/imageView"
@@ -16,7 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
-        app:srcCompat="@drawable/image_signup" />
+        app:srcCompat="@drawable/image_signup"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/titleTextView"
