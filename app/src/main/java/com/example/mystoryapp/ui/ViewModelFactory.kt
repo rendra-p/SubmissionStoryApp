@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.data.UserRepository
 import com.example.mystoryapp.ui.login.LoginViewModel
+import com.example.mystoryapp.ui.main.StoryViewModel
 import com.example.mystoryapp.ui.signup.SignupViewModel
 import com.example.mystoryapp.ui.welcome.TokenDataStore
 
@@ -20,6 +21,10 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
                 @Suppress("UNCHECKED_CAST")
                 LoginViewModel(repository, tokenDataStore!!) as T
+            }
+            modelClass.isAssignableFrom(StoryViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
+                StoryViewModel(repository, tokenDataStore!!) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }

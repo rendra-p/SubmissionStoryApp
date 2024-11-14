@@ -11,7 +11,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.mystoryapp.MainActivity
+import com.example.mystoryapp.ui.main.MainActivity
 import com.example.mystoryapp.R
 import com.example.mystoryapp.data.Injection
 import com.example.mystoryapp.databinding.ActivityLoginBinding

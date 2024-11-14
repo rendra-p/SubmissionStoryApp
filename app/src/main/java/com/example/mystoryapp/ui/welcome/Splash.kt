@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.mystoryapp.MainActivity
+import com.example.mystoryapp.ui.main.MainActivity
 import com.example.mystoryapp.databinding.ActivitySplashBinding
 import kotlinx.coroutines.launch
 
