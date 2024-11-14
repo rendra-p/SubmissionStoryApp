@@ -11,6 +11,8 @@ import com.example.mystoryapp.databinding.ItemStoryBinding
 
 class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.ViewHolder>(StoryDiffCallback()) {
 
+    private var onItemClickCallback: OnItemClickCallback? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
@@ -20,12 +22,24 @@ class StoryAdapter : ListAdapter<ListStoryItem, StoryAdapter.ViewHolder>(StoryDi
         holder.bind(getItem(position))
     }
 
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
+        this.onItemClickCallback = onItemClickCallback
+    }
+
+    interface OnItemClickCallback {
+        fun onItemClicked(story: ListStoryItem)
+    }
+
     inner class ViewHolder(private val binding: ItemStoryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(story: ListStoryItem) {
             binding.tvEventName.text = story.name
             Glide.with(binding.root.context)
                 .load(story.photoUrl)
                 .into(binding.imgEvent)
+
+            itemView.setOnClickListener {
+                onItemClickCallback?.onItemClicked(story)
+            }
         }
     }
 
