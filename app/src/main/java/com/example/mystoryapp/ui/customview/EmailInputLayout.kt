@@ -21,8 +21,10 @@ class EmailInputLayout @JvmOverloads constructor(
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     val email = s?.toString() ?: ""
                     if (email.isNotEmpty() && !isValidEmail(email)) {
-                        setError("Email tidak valid")
+                        isErrorEnabled = true
+                        error = "Email tidak valid"
                     } else {
+                        isErrorEnabled = false
                         error = null
                     }
                 }
