@@ -18,6 +18,7 @@ class Splash : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar?.hide()
 
         tokenDataStore = TokenDataStore.getInstance(this)
 
