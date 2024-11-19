@@ -16,4 +16,8 @@
     <string name="refresh">Muat Ulang</string>
     <string name="loading">Loading…</string>
     <string name="create">Create</string>
+    <string name="upload">Unggah</string>
+    <string name="galeri">Galeri</string>
+    <string name="kamera">Kamera</string>
+    <string name="deskripsi">Deskripsi</string>
 </resources>
