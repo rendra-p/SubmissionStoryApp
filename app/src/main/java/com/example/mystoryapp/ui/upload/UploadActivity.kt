@@ -48,11 +48,11 @@ class UploadActivity : AppCompatActivity() {
         val viewModelFactory = Injection.provideUploadViewModelFactory(this)
         viewModel = ViewModelProvider(this, viewModelFactory)[UploadViewModel::class.java]
 
-        binding.cameraButton.setOnClickListener {
+        binding.btnCamera.setOnClickListener {
             openCamera()
         }
 
-        binding.galleryButton.setOnClickListener {
+        binding.btnGallery.setOnClickListener {
             openGallery()
         }
 
@@ -149,7 +149,7 @@ class UploadActivity : AppCompatActivity() {
             } while (outputStream.size() / 1024 > 1024 && quality > 0)
 
             val compressedBitmap = BitmapFactory.decodeStream(ByteArrayInputStream(outputStream.toByteArray()))
-            binding.imageStoryUpload.setImageBitmap(compressedBitmap)
+            binding.imgUpload.setImageBitmap(compressedBitmap)
         } else {
             Toast.makeText(this, "Gagal memuat gambar", Toast.LENGTH_SHORT).show()
         }
@@ -190,15 +190,15 @@ class UploadActivity : AppCompatActivity() {
             return
         }
 
-        val drawable = binding.imageStoryUpload.drawable
+        val drawable = binding.imgUpload.drawable
         if (drawable == null) {
             Toast.makeText(this, "Pilih gambar terlebih dahulu", Toast.LENGTH_SHORT).show()
             return
         }
 
-        binding.imageStoryUpload.isDrawingCacheEnabled = true
-        binding.imageStoryUpload.buildDrawingCache()
-        val bitmap = binding.imageStoryUpload.drawingCache
+        binding.imgUpload.isDrawingCacheEnabled = true
+        binding.imgUpload.buildDrawingCache()
+        val bitmap = binding.imgUpload.drawingCache
 
         val file = bitmapToFile(bitmap)
 

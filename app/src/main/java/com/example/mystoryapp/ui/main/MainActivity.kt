@@ -76,15 +76,15 @@ class MainActivity : AppCompatActivity() {
         builder
             .setTitle(getString(R.string.logout))
             .setMessage("Apakah anda yakin keluar?")
-            .setPositiveButton("Batal") { _, _ ->
-                alert.cancel()
-            }
-            .setNegativeButton("Lanjutkan") { _, _ ->
+            .setPositiveButton("Lanjutkan") { _, _ ->
                 lifecycleScope.launch {
                     tokenDataStore.clearToken()
                     startActivity(Intent(this@MainActivity, WelcomeActivity::class.java))
                     finish()
                 }
+            }
+            .setNegativeButton("Batal") { _, _ ->
+                alert.cancel()
             }
             .show()
     }

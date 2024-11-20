@@ -11,18 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingBottom="30dp">
 
-        <Button
-            android:id="@+id/btnPostStory"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/upload"
-            app:layout_constraintEnd_toEndOf="@+id/tv_des"
-            app:layout_constraintStart_toStartOf="@+id/tv_des"
-            app:layout_constraintTop_toBottomOf="@+id/tv_des" />
-
         <ImageView
-            android:id="@+id/imageStoryUpload"
+            android:id="@+id/imgUpload"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
@@ -33,26 +23,26 @@
             tools:ignore="ContentDescription" />
 
         <Button
-            android:id="@+id/cameraButton"
+            android:id="@+id/btnCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/kamera"
-            app:layout_constraintEnd_toStartOf="@+id/galleryButton"
+            app:layout_constraintEnd_toStartOf="@+id/btnGallery"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@+id/imageStoryUpload"
-            app:layout_constraintTop_toBottomOf="@+id/imageStoryUpload" />
+            app:layout_constraintStart_toStartOf="@+id/imgUpload"
+            app:layout_constraintTop_toBottomOf="@+id/imgUpload" />
 
         <Button
-            android:id="@+id/galleryButton"
+            android:id="@+id/btnGallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/galeri"
-            app:layout_constraintEnd_toEndOf="@+id/imageStoryUpload"
+            app:layout_constraintEnd_toEndOf="@+id/imgUpload"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/cameraButton"
-            app:layout_constraintTop_toBottomOf="@+id/imageStoryUpload" />
+            app:layout_constraintStart_toEndOf="@+id/btnCamera"
+            app:layout_constraintTop_toBottomOf="@+id/imgUpload" />
 
         <EditText
             android:id="@+id/tv_des"
@@ -68,10 +58,20 @@
             android:maxLines="8"
             android:padding="15dp"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/imageStoryUpload"
-            app:layout_constraintStart_toStartOf="@+id/imageStoryUpload"
-            app:layout_constraintTop_toBottomOf="@+id/cameraButton"
+            app:layout_constraintEnd_toEndOf="@+id/imgUpload"
+            app:layout_constraintStart_toStartOf="@+id/imgUpload"
+            app:layout_constraintTop_toBottomOf="@+id/btnCamera"
             tools:ignore="RtlHardcoded" />
+
+        <Button
+            android:id="@+id/btnPostStory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/upload"
+            app:layout_constraintEnd_toEndOf="@+id/tv_des"
+            app:layout_constraintStart_toStartOf="@+id/tv_des"
+            app:layout_constraintTop_toBottomOf="@+id/tv_des" />
 
         <ProgressBar
             android:id="@+id/progressBar"
