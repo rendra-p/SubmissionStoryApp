@@ -22,4 +22,10 @@ object Injection {
         val tokenDataStore = provideTokenDataStore(context)
         return ViewModelFactory(repository, tokenDataStore)
     }
+
+    fun provideUploadViewModelFactory(context: Context): ViewModelProvider.Factory {
+        val repository = provideUserRepository(context)
+        val tokenDataStore = provideTokenDataStore(context)
+        return ViewModelFactory(repository, tokenDataStore)
+    }
 }

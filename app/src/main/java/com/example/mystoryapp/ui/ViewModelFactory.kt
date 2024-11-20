@@ -6,6 +6,7 @@ import com.example.mystoryapp.data.UserRepository
 import com.example.mystoryapp.ui.login.LoginViewModel
 import com.example.mystoryapp.ui.main.StoryViewModel
 import com.example.mystoryapp.ui.signup.SignupViewModel
+import com.example.mystoryapp.ui.upload.UploadViewModel
 import com.example.mystoryapp.ui.welcome.TokenDataStore
 
 class ViewModelFactory(
@@ -25,6 +26,10 @@ class ViewModelFactory(
             modelClass.isAssignableFrom(StoryViewModel::class.java) -> {
                 @Suppress("UNCHECKED_CAST")
                 StoryViewModel(repository, tokenDataStore!!) as T
+            }
+            modelClass.isAssignableFrom(UploadViewModel::class.java) -> {
+                @Suppress("UNCHECKED_CAST")
+                UploadViewModel(repository, tokenDataStore!!) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }

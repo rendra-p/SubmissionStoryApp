@@ -2,6 +2,7 @@ package com.example.mystoryapp.ui.upload
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -12,17 +13,27 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.R
+import com.example.mystoryapp.data.Injection
 import com.example.mystoryapp.databinding.ActivityUploadBinding
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -32,11 +43,15 @@ class UploadActivity : AppCompatActivity() {
     private val GALLERY_REQUEST_CODE = 200
     private lateinit var photoURI: Uri
     private var imageUri: Uri? = null
+    private lateinit var viewModel: UploadViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUploadBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val viewModelFactory = Injection.provideUploadViewModelFactory(this)
+        viewModel = ViewModelProvider(this, viewModelFactory)[UploadViewModel::class.java]
 
         binding.cameraButton.setOnClickListener {
             openCamera()
@@ -44,6 +59,25 @@ class UploadActivity : AppCompatActivity() {
 
         binding.galleryButton.setOnClickListener {
             openGallery()
+        }
+
+        binding.btnPostStory.setOnClickListener {
+            uploadStory()
+        }
+
+        // Observe upload result
+        viewModel.uploadResult.observe(this) { result ->
+            result.onSuccess { response ->
+                if (!response.error!!) {
+                    setResult(Activity.RESULT_OK)
+                    Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+                }
+            }.onFailure { exception ->
+                Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Restore the image URI if it exists
@@ -158,6 +192,70 @@ class UploadActivity : AppCompatActivity() {
         return inSampleSize
     }
 
+    private fun uploadStory() {
+        // Validasi input
+        val description = binding.tvDes.text.toString().trim()
+        if (description.isEmpty()) {
+            binding.tvDes.error = "Deskripsi harus diisi"
+            return
+        }
+
+        // Pastikan gambar sudah dipilih
+        val drawable = binding.imageStoryUpload.drawable
+        if (drawable == null) {
+            Toast.makeText(this, "Pilih gambar terlebih dahulu", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Konversi ImageView ke File
+        binding.imageStoryUpload.isDrawingCacheEnabled = true
+        binding.imageStoryUpload.buildDrawingCache()
+        val bitmap = binding.imageStoryUpload.drawingCache
+
+        // Simpan bitmap ke file
+        val file = bitmapToFile(bitmap)
+
+        // Cek ukuran file
+        if (file.length() > 1 * 1024 * 1024) { // 1MB
+            Toast.makeText(this, "Ukuran file maksimal 1MB", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Persiapkan data untuk upload
+        val descriptionPart = description.toRequestBody("text/plain".toMediaTypeOrNull())
+        val photoPart = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+        val imageMultipart = MultipartBody.Part.createFormData(
+            "photo",
+            file.name,
+            photoPart
+        )
+
+        // Panggil fungsi upload di ViewModel
+        viewModel.uploadStory(descriptionPart, imageMultipart)
+    }
+
+    // Tambahkan fungsi bantuan untuk convert bitmap ke file
+    private fun bitmapToFile(bitmap: Bitmap): File {
+        // Buat file sementara
+        val file = File(cacheDir, "uploaded_image_${System.currentTimeMillis()}.jpg")
+
+        try {
+            // Buka output stream
+            val outputStream = FileOutputStream(file)
+
+            // Kompresi bitmap ke file
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+
+            // Tutup stream
+            outputStream.flush()
+            outputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return file
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable("imageUri", imageUri)
@@ -172,5 +270,21 @@ class UploadActivity : AppCompatActivity() {
                 Toast.makeText(this, "Izin kamera diperlukan", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun uriToFile(selectedImg: Uri, context: Context): File {
+        val contentResolver = context.contentResolver
+        val file = File(context.cacheDir, System.currentTimeMillis().toString())
+
+        try {
+            val inputStream = contentResolver.openInputStream(selectedImg)
+            val outputStream = FileOutputStream(file)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return file
     }
 }

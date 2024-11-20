@@ -1,11 +1,13 @@
 package com.example.mystoryapp.ui.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -28,6 +30,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var storyViewModel: StoryViewModel
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var tokenDataStore: TokenDataStore
+
+    private val uploadLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Refresh data
+            storyViewModel.fetchStories()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,7 +124,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAction(){
         binding.floatingBtn.setOnClickListener {
-            startActivity(Intent(this, UploadActivity::class.java))
+            val intent = Intent(this, UploadActivity::class.java)
+            uploadLauncher.launch(intent)
         }
     }
 }
