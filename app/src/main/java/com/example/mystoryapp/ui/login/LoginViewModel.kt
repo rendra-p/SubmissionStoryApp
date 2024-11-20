@@ -30,7 +30,6 @@ class LoginViewModel(private val repository: UserRepository, private val tokenDa
                     }
                 }
             } catch (e: Exception) {
-                // Tangani error login
                 val errorMessage = when {
                     e is HttpException && e.code() == 401 -> {
                         "Invalid email or password"

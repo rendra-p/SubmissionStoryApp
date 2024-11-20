@@ -24,10 +24,8 @@ class SignupViewModel(private val repository: UserRepository) : ViewModel() {
                 val result = repository.registerUser(name, email, password)
                 _registrationResult.value = result
             } catch (e: Exception) {
-                // Handle specific error scenarios
                 val errorMessage = when {
                     e is HttpException && e.code() == 400 -> {
-                        // Parse error response for email already taken
                         val errorBody = e.response()?.errorBody()?.string()
                         val errorResponse = Gson().fromJson(errorBody, RegisterResponse::class.java)
                         errorResponse.message ?: "Registration failed"

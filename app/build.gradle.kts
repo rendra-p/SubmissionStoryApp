@@ -59,11 +59,9 @@ dependencies {
     implementation (libs.gson)
     implementation (libs.glide)
 
-    //retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
 
-    //datastore
     implementation (libs.androidx.datastore.preferences)
 }

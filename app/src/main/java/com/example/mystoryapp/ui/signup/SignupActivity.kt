@@ -40,7 +40,6 @@ class SignupActivity : AppCompatActivity() {
             val email = binding.edRegisterEmail.text.toString()
             val password = binding.edRegisterPassword.text.toString()
 
-            // Validasi input
             if (validateInput(name, email, password)) {
                 viewModel.registerUser(name, email, password)
             }
@@ -82,16 +81,13 @@ class SignupActivity : AppCompatActivity() {
         viewModel.registrationResult.observe(this) { result ->
             result.onSuccess { response ->
                 if (response.error == false) {
-                    // Registrasi berhasil
                     Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, WelcomeActivity::class.java))
                     finish()
                 } else {
-                    // Registrasi gagal
                     Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
                 }
             }.onFailure { exception ->
-                // Tangani error jaringan atau lainnya
                 Toast.makeText(this, "Registration failed: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
         }

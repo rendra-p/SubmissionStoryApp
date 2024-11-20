@@ -24,21 +24,17 @@ class StoryViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // Ambil token dari DataStore
                 val token = tokenDataStore.token.first()
 
-                // Pastikan token tidak null
                 token?.let {
                     val result = repository.getStories()
                     result.onSuccess { response ->
                         _stories.value = response.listStory
                     }
                     result.onFailure {
-                        // Handle error
                     }
                 }
-            } catch (e: Exception) {
-                // Handle exception
+            } catch (_: Exception) {
             } finally {
                 _isLoading.value = false
             }

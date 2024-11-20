@@ -1,6 +1,7 @@
 package com.example.mystoryapp.ui.upload
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -12,21 +13,15 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.mystoryapp.R
 import com.example.mystoryapp.data.Injection
 import com.example.mystoryapp.databinding.ActivityUploadBinding
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayInputStream
@@ -65,7 +60,6 @@ class UploadActivity : AppCompatActivity() {
             uploadStory()
         }
 
-        // Observe upload result
         viewModel.uploadResult.observe(this) { result ->
             result.onSuccess { response ->
                 if (!response.error!!) {
@@ -80,7 +74,6 @@ class UploadActivity : AppCompatActivity() {
             }
         }
 
-        // Restore the image URI if it exists
         if (savedInstanceState != null) {
             imageUri = savedInstanceState.getParcelable("imageUri")
             imageUri?.let {
@@ -89,13 +82,13 @@ class UploadActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun openCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
         } else {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (takePictureIntent.resolveActivity(packageManager) != null) {
-                // Create a file to save the image
                 val photoFile: File? = createImageFile()
                 photoFile?.also {
                     photoURI = FileProvider.getUriForFile(
@@ -110,6 +103,7 @@ class UploadActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun createImageFile(): File? {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -143,12 +137,11 @@ class UploadActivity : AppCompatActivity() {
     }
 
     private fun compressAndSetImage(uri: Uri) {
-        val bitmap = decodeSampledBitmapFromUri(uri, 1024, 1024) // Set width and height limit
+        val bitmap = decodeSampledBitmapFromUri(uri, 1024, 1024)
         if (bitmap != null) {
             val outputStream = ByteArrayOutputStream()
             var quality = 100
 
-            // Compress the image until it's less than 1MB
             do {
                 outputStream.reset()
                 bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
@@ -168,10 +161,8 @@ class UploadActivity : AppCompatActivity() {
         }
         BitmapFactory.decodeStream(contentResolver.openInputStream(uri), null, options)
 
-        // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
 
-        // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false
         return BitmapFactory.decodeStream(contentResolver.openInputStream(uri), null, options)
     }
@@ -193,35 +184,29 @@ class UploadActivity : AppCompatActivity() {
     }
 
     private fun uploadStory() {
-        // Validasi input
         val description = binding.tvDes.text.toString().trim()
         if (description.isEmpty()) {
             binding.tvDes.error = "Deskripsi harus diisi"
             return
         }
 
-        // Pastikan gambar sudah dipilih
         val drawable = binding.imageStoryUpload.drawable
         if (drawable == null) {
             Toast.makeText(this, "Pilih gambar terlebih dahulu", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Konversi ImageView ke File
         binding.imageStoryUpload.isDrawingCacheEnabled = true
         binding.imageStoryUpload.buildDrawingCache()
         val bitmap = binding.imageStoryUpload.drawingCache
 
-        // Simpan bitmap ke file
         val file = bitmapToFile(bitmap)
 
-        // Cek ukuran file
-        if (file.length() > 1 * 1024 * 1024) { // 1MB
+        if (file.length() > 1 * 1024 * 1024) {
             Toast.makeText(this, "Ukuran file maksimal 1MB", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Persiapkan data untuk upload
         val descriptionPart = description.toRequestBody("text/plain".toMediaTypeOrNull())
         val photoPart = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val imageMultipart = MultipartBody.Part.createFormData(
@@ -230,23 +215,17 @@ class UploadActivity : AppCompatActivity() {
             photoPart
         )
 
-        // Panggil fungsi upload di ViewModel
         viewModel.uploadStory(descriptionPart, imageMultipart)
     }
 
-    // Tambahkan fungsi bantuan untuk convert bitmap ke file
     private fun bitmapToFile(bitmap: Bitmap): File {
-        // Buat file sementara
         val file = File(cacheDir, "uploaded_image_${System.currentTimeMillis()}.jpg")
 
         try {
-            // Buka output stream
             val outputStream = FileOutputStream(file)
 
-            // Kompresi bitmap ke file
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
 
-            // Tutup stream
             outputStream.flush()
             outputStream.close()
         } catch (e: Exception) {
@@ -270,21 +249,5 @@ class UploadActivity : AppCompatActivity() {
                 Toast.makeText(this, "Izin kamera diperlukan", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun uriToFile(selectedImg: Uri, context: Context): File {
-        val contentResolver = context.contentResolver
-        val file = File(context.cacheDir, System.currentTimeMillis().toString())
-
-        try {
-            val inputStream = contentResolver.openInputStream(selectedImg)
-            val outputStream = FileOutputStream(file)
-            inputStream?.copyTo(outputStream)
-            inputStream?.close()
-            outputStream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return file
     }
 }

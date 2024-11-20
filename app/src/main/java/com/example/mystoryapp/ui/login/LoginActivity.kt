@@ -39,7 +39,6 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.edLoginEmail.text.toString()
             val password = binding.edLoginPassword.text.toString()
 
-            // Validasi input
             if (validateInput(email, password)) {
                 viewModel.login(email, password)
             }
@@ -76,12 +75,13 @@ class LoginActivity : AppCompatActivity() {
     private fun observeLoginResult() {
         viewModel.loginResult.observe(this) { result ->
             result.onSuccess { response ->
-                // Login berhasil
                 Toast.makeText(this, "Login successful: ${response.message}", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
                 finish()
             }.onFailure { exception ->
-                // Tangani error login
                 Toast.makeText(this, "Login failed: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
         }

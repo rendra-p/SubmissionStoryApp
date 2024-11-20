@@ -32,7 +32,6 @@ class Splash : AppCompatActivity() {
         lifecycleScope.launch {
             tokenDataStore.token.collect { token ->
                 if (!token.isNullOrEmpty()) {
-                    // Arahkan ke MainActivity jika token ada
                     startActivity(Intent(this@Splash, MainActivity::class.java))
                     finish()
                 }
